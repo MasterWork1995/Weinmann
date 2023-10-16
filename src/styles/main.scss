@@ -1,0 +1,122 @@
+@import 'variables';
+
+.App {
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+
+    @media screen and (max-width: $tablet-width) {
+      flex-direction: column;
+    }
+  }
+
+  .inventory {
+    background-color: $background-color;
+    border: 1px solid $secondary-color;
+
+    .new.btn {
+      background-color: $primary-color;
+      color: $white-color;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+  }
+
+  .basket {
+    background-color: $background-color;
+    border: 1px solid $secondary-color;
+
+    .delete.btn {
+      background-color: $primary-color;
+      color: $white-color;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+  }
+
+  .wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 10px;
+  }
+
+  .input {
+    width: 100%;
+    max-width: 200px;
+  }
+
+  .title {
+    color: $primary-color;
+    margin-bottom: 10px;
+    padding: 0 10px;
+  }
+
+  .btn {
+    background-color: $primary-color;
+    color: $white-color;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+
+    color: $white-color;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+
+    &.disabled {
+      background-color: $secondary-color;
+    }
+  }
+
+  .text {
+    font-weight: bold;
+
+    &.total {
+      padding: 0 10px;
+    }
+  }
+
+  .list {
+    list-style: none;
+    padding: 0;
+
+    .list-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 0;
+      border-bottom: 1px solid $secondary-color;
+      cursor: pointer;
+      padding: 0 10px;
+
+      &.selected {
+        background-color: $selected;
+      }
+    }
+  }
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+@media screen and (min-width: $tablet-width) {
+  .App {
+    padding: 20px;
+  }
+
+  .inventory,
+  .basket {
+    flex: 1;
+    margin: 10px;
+  }
+}
