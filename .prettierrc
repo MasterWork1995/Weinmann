@@ -1,5 +1,4 @@
 {
-  "arrowParens": "always",
   "bracketSpacing": true,
   "endOfLine": "auto",
   "importOrderSeparation": true,

@@ -1,9 +1,9 @@
-import { useState, useEffect, ChangeEvent } from 'react';
+import { useState, useEffect, ChangeEvent, useCallback } from 'react';
 import { useProducts } from './api';
 import { IProduct, IProductInBasket } from './interfaces/product';
 import Container from './components/Container';
-import InventoryItem from './components/InventoryItem';
-import BasketItem from './components/BasketItem';
+import Inventory from './components/Inventory';
+import Basket from './components/Basket';
 
 function App() {
   const { data, isLoading, isError } = useProducts();
@@ -19,7 +19,7 @@ function App() {
     }
   }, [data]);
 
-  const handleAddSelectedToBasket = () => {
+  const handleAddSelectedToBasket = useCallback(() => {
     selectedItems.forEach((item) => {
       const existingProductIndex = basket.findIndex((basketItem) => basketItem.product.id === item.id);
 
@@ -34,42 +34,48 @@ function App() {
     });
 
     setSelectedItems([]);
-  };
+  }, [basket, selectedItems]);
 
-  const handleToggleSelect = (item: IProduct) => {
-    const isSelected = selectedItems.some((selectedItem) => selectedItem.id === item.id);
-    if (isSelected) {
-      setSelectedItems(selectedItems.filter((selectedItem) => selectedItem.id !== item.id));
-    } else {
-      setSelectedItems([...selectedItems, item]);
-    }
-  };
+  const handleToggleSelect = useCallback(
+    (item: IProduct) => {
+      const isSelected = selectedItems.some((selectedItem) => selectedItem.id === item.id);
+      if (isSelected) {
+        setSelectedItems(selectedItems.filter((selectedItem) => selectedItem.id !== item.id));
+      } else {
+        setSelectedItems([...selectedItems, item]);
+      }
+    },
+    [selectedItems]
+  );
 
-  const handleToggleSelectBasket = (item: IProductInBasket) => {
-    const isSelected = selectedItemBasket.some((selectedItem) => selectedItem.product.id === item.product.id);
-    if (isSelected) {
-      setSelectedItemBasket(selectedItemBasket.filter((selectedItem) => selectedItem.product.id !== item.product.id));
-    } else {
-      setSelectedItemBasket([...selectedItemBasket, item]);
-    }
-  };
+  const handleToggleSelectBasket = useCallback(
+    (item: IProductInBasket) => {
+      const isSelected = selectedItemBasket.some((selectedItem) => selectedItem.product.id === item.product.id);
+      if (isSelected) {
+        setSelectedItemBasket(selectedItemBasket.filter((selectedItem) => selectedItem.product.id !== item.product.id));
+      } else {
+        setSelectedItemBasket([...selectedItemBasket, item]);
+      }
+    },
+    [selectedItemBasket]
+  );
 
-  const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleTitleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     setTitle(e.target.value);
-  };
+  }, []);
 
-  const handleAddToInventory = () => {
+  const handleAddToInventory = useCallback(() => {
     const newProduct = { id: inventory.length + 1, title };
     setInventory([...inventory, newProduct]);
     setTitle('');
-  };
+  }, [inventory, title]);
 
-  const handleDeleteSelectedFromBasket = () => {
+  const handleDeleteSelectedFromBasket = useCallback(() => {
     const updatedBasket = basket.filter((item) => !selectedItemBasket.some((selectedItem) => selectedItem.product.id === item.product.id));
     setBasket(updatedBasket);
     setSelectedItemBasket([]);
-  };
+  }, [basket, selectedItemBasket]);
 
   const calculateTotal = () => basket.reduce((acc, item) => acc + item.count, 0);
 
@@ -92,54 +98,22 @@ function App() {
   return (
     <div className="App">
       <Container>
-        <div className="inventory">
-          <h2 className="title">Inventory</h2>
-          <div className="wrapper">
-            <label className="text" htmlFor="title">
-              Title:
-            </label>
-            <input className="input" id="title" value={title} onChange={(e) => handleTitleChange(e)} />
-            <button disabled={title.length < 3} className={`btn ${title.length < 3 ? 'disabled' : ''}`} onClick={handleAddToInventory}>
-              New
-            </button>
-            <button disabled={selectedItems.length === 0} className={`btn ${selectedItems.length === 0 ? 'disabled' : ''}`} onClick={handleAddSelectedToBasket}>
-              Add
-            </button>
-          </div>
-          <ul className="list">
-            {inventory.map((item: IProduct) => (
-              <InventoryItem
-                key={item.id}
-                item={item}
-                selected={selectedItems.some((selectedItem) => selectedItem.id === item.id)}
-                onClick={() => handleToggleSelect(item)}
-              />
-            ))}
-          </ul>
-        </div>
-        <div className="basket ">
-          <h2 className="title">Basket</h2>
-          <div className="wrapper">
-            <button
-              disabled={selectedItemBasket.length === 0}
-              className={`btn ${selectedItemBasket.length === 0 ? 'disabled' : ''}`}
-              onClick={handleDeleteSelectedFromBasket}
-            >
-              Delete
-            </button>
-          </div>
-          <ul className="list">
-            {basket.map((item: IProductInBasket) => (
-              <BasketItem
-                key={item.product.id}
-                item={item}
-                selected={selectedItemBasket.some((selectedItem) => selectedItem.product.id === item.product.id)}
-                onClick={() => handleToggleSelectBasket(item)}
-              />
-            ))}
-          </ul>
-          <p className="text total">Total: {calculateTotal()}</p>
-        </div>
+        <Inventory
+          title={title}
+          onTitleChange={handleTitleChange}
+          onAddToInventory={handleAddToInventory}
+          selectedItems={selectedItems}
+          onAddSelectedToBasket={handleAddSelectedToBasket}
+          onToggleSelect={handleToggleSelect}
+          inventory={inventory}
+        />
+        <Basket
+          selectedItemBasket={selectedItemBasket}
+          onDeleteSelectedFromBasket={handleDeleteSelectedFromBasket}
+          onToggleSelectBasket={handleToggleSelectBasket}
+          basket={basket}
+          calculateTotal={calculateTotal()}
+        />
       </Container>
     </div>
   );

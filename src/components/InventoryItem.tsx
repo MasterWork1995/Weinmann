@@ -1,18 +1,16 @@
 import { FC } from 'react';
 import { IProduct } from '../interfaces/product';
 
-interface InventoryItemProps {
+interface IProps {
   item: IProduct;
-  selected: boolean;
-  onClick: () => void;
+  selectedItems: IProduct[];
+  onToggleSelect: (item: IProduct) => void;
 }
 
-const InventoryItem: FC<InventoryItemProps> = ({ item, selected, onClick }) => {
-  return (
-    <li className={`list-item ${selected ? 'selected' : ''}`} onClick={onClick}>
-      <p className="text">{item.title}</p>
-    </li>
-  );
-};
+const InventoryItem: FC<IProps> = ({ item, selectedItems, onToggleSelect }) => (
+  <li onClick={() => onToggleSelect(item)} className={`list-item ${selectedItems.some((selectedItem) => selectedItem.id === item.id) ? 'selected' : ''}`}>
+    <p className="text">{item.title}</p>
+  </li>
+);
 
 export default InventoryItem;
